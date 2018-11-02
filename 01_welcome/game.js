@@ -11,6 +11,7 @@ var winningMessage;
 var won = false;
 var currentScore = 0;
 var winningScore = 100;
+var lives = 3;
 
 // add collectable items to the game
 function addItems() {
@@ -57,7 +58,13 @@ function createBadge() {
   var badge = badges.create(750, 400, 'badge');
   badge.animations.add('spin');
   badge.animations.play('spin', 10, true);
+  if (currentScore === winningScore) {
+      createBadge();
+    }
 }
+
+
+/// why not start the game with 3 lives? Each time the player hits a bottle of poision they lose one life; at 0 lives the game is over.//
 
 // when the player collects an item on the screen
 function itemHandler(player, item) {
@@ -65,17 +72,12 @@ function itemHandler(player, item) {
     if (item.key === 'coin') {
       currentScore = currentScore + 10;
     } else if (item.key === 'poison') {
-      currentScore = currentScore - 25;
+      lives = lives - 1;
     } else if (item.key === 'star') {
       currentScore = currentScore + 25;
     }
-
-    if (currentScore === winningScore) {
-      createBadge();
-    }
-  
 }
-
+   
 // when the player collects the badge at the end of the game
 function badgeHandler(player, badge) {
   badge.kill();
@@ -95,7 +97,7 @@ window.onload = function () {
     game.load.image('platform2', 'platform_2.png');
 
     //Load spritesheets
-    game.load.spritesheet('player', 'chalkers.png', 48, 62);
+    game.load.spritesheet('player', 'mikethefrog.png', 32, 32);
     game.load.spritesheet('coin', 'coin.png', 36, 44);
     game.load.spritesheet('badge', 'badge.png', 42, 54);
     game.load.spritesheet('star', 'star.png', 32, 32);
@@ -117,6 +119,7 @@ window.onload = function () {
     cursors = game.input.keyboard.createCursorKeys();
     jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     text = game.add.text(16, 16, "SCORE: " + currentScore, { font: "bold 24px Arial", fill: "white" });
+    text2 = game.add.text(616, 16, "LIVES: " + lives, { font: "bold 24px Arial", fill: "white" });
     winningMessage = game.add.text(game.world.centerX, 275, "", { font: "bold 48px Arial", fill: "white" });
     winningMessage.anchor.setTo(0.5, 1);
   }
@@ -124,6 +127,7 @@ window.onload = function () {
   // while the game is running
   function update() {
     text.text = "SCORE: " + currentScore;
+    text2.text = "LIVES: " + lives;
     game.physics.arcade.collide(player, platforms);
     game.physics.arcade.overlap(player, items, itemHandler);
     game.physics.arcade.overlap(player, badges, badgeHandler);
